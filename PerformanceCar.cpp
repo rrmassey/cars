@@ -1,84 +1,77 @@
-#include "PerformanceCar.h"
+#ifndef PERFORMANCECAR_H
+#define PERFORMANCECAR_H
 
-PerformanceCar::PerformanceCar(int id, const std::string& make, const std::string& model, int year, double price, int horsepower, double topSpeed)
-    : Car(id, make, model), year(year), price(price), horsepower(horsepower), topSpeed(topSpeed) {}
+#include "Car.h"
+#include "Engine.h"
 
-void PerformanceCar::display() const {
-    Car::display();
-    std::cout << "Year: " << year << std::endl;
-    std::cout << "Price: $" << price << std::endl;
-    std::cout << "Horsepower: " << horsepower << " hp" << std::endl;
-    std::cout << "Top Speed: " << topSpeed << " mph" << std::endl;
-}
+class PerformanceCar : public Car<int> {
+private:
+    Engine engine;
+    double topSpeed;
+    double zeroToSixty;
+    double quarterMile;
 
-void PerformanceCar::readFromBinary(std::ifstream& in) {
-    Car::readFromBinary(in);
-    in.read(reinterpret_cast<char*>(&year), sizeof(year));
-    in.read(reinterpret_cast<char*>(&price), sizeof(price));
-    in.read(reinterpret_cast<char*>(&horsepower), sizeof(horsepower));
-    in.read(reinterpret_cast<char*>(&topSpeed), sizeof(topSpeed));
-}
+public:
+    PerformanceCar(int id = 0, const std::string& make = "", const std::string& model = "", 
+                   const Engine& engine = Engine(), double topSpeed = 0.0, double zeroToSixty = 0.0, double quarterMile = 0.0)
+        : Car(id, make, model), engine(engine), topSpeed(topSpeed), zeroToSixty(zeroToSixty), quarterMile(quarterMile) {}
 
-void PerformanceCar::writeToBinary(std::ofstream& out) const {
-    Car::writeToBinary(out);
-    out.write(reinterpret_cast<const char*>(&year), sizeof(year));
-    out.write(reinterpret_cast<const char*>(&price), sizeof(price));
-    out.write(reinterpret_cast<const char*>(&horsepower), sizeof(horsepower));
-    out.write(reinterpret_cast<const char*>(&topSpeed), sizeof(topSpeed));
-}
+    Engine getEngine() const { return engine; }
+    double getTopSpeed() const { return topSpeed; }
+    double getZeroToSixty() const { return zeroToSixty; }
+    double getQuarterMile() const { return quarterMile; }
 
-int PerformanceCar::getYear() const {
-    return year;
-}
+    void setEngine(const Engine& engine) { this->engine = engine; }
+    void setTopSpeed(double topSpeed) { this->topSpeed = topSpeed; }
+    void setZeroToSixty(double zeroToSixty) { this->zeroToSixty = zeroToSixty; }
+    void setQuarterMile(double quarterMile) { this->quarterMile = quarterMile; }
 
-double PerformanceCar::getPrice() const {
-    return price;
-}
-
-int PerformanceCar::getHorsepower() const {
-    return horsepower;
-}
-
-double PerformanceCar::getTopSpeed() const {
-    return topSpeed;
-}
-
-void PerformanceCar::setYear(int year) {
-    this->year = year;
-}
-
-void PerformanceCar::setPrice(double price) {
-    this->price = price;
-}
-
-void PerformanceCar::setHorsepower(int horsepower) {
-    this->horsepower = horsepower;
-}
-
-void PerformanceCar::setTopSpeed(double topSpeed) {
-    this->topSpeed = topSpeed;
-}
-
-void PerformanceCar::validate() const {
-    if (year < 1886 || price < 0 || horsepower < 0 || topSpeed < 0) {
-        throw InvalidValueException("Invalid value in PerformanceCar");
+    void display() const override {
+        Car::display();
+        engine.display();
+        std::cout << "Top Speed: " << topSpeed << " mph"
+                  << "\n0-60 mph: " << zeroToSixty << " seconds"
+                  << "\nQuarter Mile: " << quarterMile << " seconds" << std::endl;
     }
-}
 
-std::ostream& operator<<(std::ostream& os, const PerformanceCar& car) {
-    car.display();
-    return os;
-}
+    void readFromBinary(std::ifstream& in) override {
+        Car::readFromBinary(in);
+        engine.readFromBinary(in);
+        in.read(reinterpret_cast<char*>(&topSpeed), sizeof(topSpeed));
+        in.read(reinterpret_cast<char*>(&zeroToSixty), sizeof(zeroToSixty));
+        in.read(reinterpret_cast<char*>(&quarterMile), sizeof(quarterMile));
+    }
 
-std::istream& operator>>(std::istream& is, PerformanceCar& car) {
-    is >> static_cast<Car<int>&>(car);
-    std::cout << "Enter Year: ";
-    is >> car.year;
-    std::cout << "Enter Price: ";
-    is >> car.price;
-    std::cout << "Enter Horsepower: ";
-    is >> car.horsepower;
-    std::cout << "Enter Top Speed (mph): ";
-    is >> car.topSpeed;
-    return is;
-}
+    void writeToBinary(std::ofstream& out) const override {
+        Car::writeToBinary(out);
+        engine.writeToBinary(out);
+        out.write(reinterpret_cast<const char*>(&topSpeed), sizeof(topSpeed));
+        out.write(reinterpret_cast<const char*>(&zeroToSixty), sizeof(zeroToSixty));
+        out.write(reinterpret_cast<const char*>(&quarterMile), sizeof(quarterMile));
+    }
+
+    void validate() const override {
+        if (topSpeed < 0 || zeroToSixty < 0 || quarterMile < 0) {
+            throw InvalidValueException("Invalid value in PerformanceCar");
+        }
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, const PerformanceCar& car) {
+        car.display();
+        return os;
+    }
+
+    friend std::istream& operator>>(std::istream& is, PerformanceCar& car) {
+        car.read(is);
+        car.engine.read(is);
+        std::cout << "Enter Top Speed (mph): ";
+        is >> car.topSpeed;
+        std::cout << "Enter 0-60 mph time (seconds): ";
+        is >> car.zeroToSixty;
+        std::cout << "Enter Quarter Mile time (seconds): ";
+        is >> car.quarterMile;
+        return is;
+    }
+};
+
+#endif // PERFORMANCECAR_H
