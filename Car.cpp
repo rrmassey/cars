@@ -1,75 +1,59 @@
-#ifndef CAR_CPP
-#define CAR_CPP
-
 #include "Car.h"
+#include "InvalidValueException.h"
 
-template <typename T>
-Car<T>::Car(int id, const std::string& make, const std::string& model) : id(id), make(make), model(model) {}
-
-template <typename T>
-Car<T>::~Car() {}
-
-template <typename T>
-int Car<T>::getId() const {
+// Car class template implementations
+template<typename T>
+T Car<T>::getId() const {
     return id;
 }
 
-template <typename T>
+template<typename T>
 std::string Car<T>::getMake() const {
     return make;
 }
 
-template <typename T>
+template<typename T>
 std::string Car<T>::getModel() const {
     return model;
 }
 
-template <typename T>
-void Car<T>::setId(int id) {
+template<typename T>
+void Car<T>::setId(T id) {
     this->id = id;
 }
 
-template <typename T>
+template<typename T>
 void Car<T>::setMake(const std::string& make) {
     this->make = make;
 }
 
-template <typename T>
+template<typename T>
 void Car<T>::setModel(const std::string& model) {
     this->model = model;
 }
 
-template <typename T>
+template<typename T>
 void Car<T>::display() const {
-    std::cout << "ID: " << id << std::endl;
-    std::cout << "Make: " << make << std::endl;
-    std::cout << "Model: " << model << std::endl;
+    std::cout << "ID: " << id 
+              << "\nMake: " << make 
+              << "\nModel: " << model << std::endl;
 }
 
-template <typename T>
+template<typename T>
 void Car<T>::readFromBinary(std::ifstream& in) {
     in.read(reinterpret_cast<char*>(&id), sizeof(id));
-    size_t size;
-    in.read(reinterpret_cast<char*>(&size), sizeof(size));
-    make.resize(size);
-    in.read(&make[0], size);
-    in.read(reinterpret_cast<char*>(&size), sizeof(size));
-    model.resize(size);
-    in.read(&model[0], size);
+    std::getline(in, make, '\0');
+    std::getline(in, model, '\0');
 }
 
-template <typename T>
+template<typename T>
 void Car<T>::writeToBinary(std::ofstream& out) const {
     out.write(reinterpret_cast<const char*>(&id), sizeof(id));
-    size_t size = make.size();
-    out.write(reinterpret_cast<const char*>(&size), sizeof(size));
-    out.write(make.c_str(), size);
-    size = model.size();
-    out.write(reinterpret_cast<const char*>(&size), sizeof(size));
-    out.write(model.c_str(), size);
+    out.write(make.c_str(), make.size() + 1);
+    out.write(model.c_str(), model.size() + 1);
 }
 
-template <typename T>
+template<typename T>
 void Car<T>::read(std::istream& is) {
     std::cout << "Enter ID: ";
     is >> id;
@@ -80,4 +64,5 @@ void Car<T>::read(std::istream& is) {
     std::getline(is, model);
 }
 
-#endif // CAR_CPP
+// Explicit instantiation for the Car<int> template
+template class Car<int>;
