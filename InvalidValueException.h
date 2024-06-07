@@ -1,15 +1,11 @@
 #ifndef INVALIDVALUEEXCEPTION_H
 #define INVALIDVALUEEXCEPTION_H
 
-#include <string>
-#include <exception>
+#include <stdexcept>
 
-class InvalidValueException : public std::exception {
-private:
-    std::string message;
+class InvalidValueException : public std::runtime_error {
 public:
-    InvalidValueException(const std::string& message);
-    const char* what() const noexcept override;
+    InvalidValueException(const std::string& message) : std::runtime_error(message) {}
 };
 
 #endif // INVALIDVALUEEXCEPTION_H
