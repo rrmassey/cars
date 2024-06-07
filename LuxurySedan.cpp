@@ -1,72 +1,64 @@
 #include "LuxurySedan.h"
+#include "InvalidValueException.h"
 
-LuxurySedan::LuxurySedan(int id, const std::string& make, const std::string& model, int year, double price, const std::string& features)
-    : Car(id, make, model), year(year), price(price), features(features) {}
+std::string LuxurySedan::getInteriorMaterial() const {
+    return interiorMaterial;
+}
+
+bool LuxurySedan::getHasMassageSeats() const {
+    return hasMassageSeats;
+}
+
+std::string LuxurySedan::getInfotainmentSystem() const {
+    return infotainmentSystem;
+}
+
+std::string LuxurySedan::getPaintColor() const {
+    return paintColor;
+}
+
+void LuxurySedan::setInteriorMaterial(const std::string& interiorMaterial) {
+    this->interiorMaterial = interiorMaterial;
+}
+
+void LuxurySedan::setHasMassageSeats(bool hasMassageSeats) {
+    this->hasMassageSeats = hasMassageSeats;
+}
+
+void LuxurySedan::setInfotainmentSystem(const std::string& infotainmentSystem) {
+    this->infotainmentSystem = infotainmentSystem;
+}
+
+void LuxurySedan::setPaintColor(const std::string& paintColor) {
+    this->paintColor = paintColor;
+}
 
 void LuxurySedan::display() const {
     Car::display();
-    std::cout << "Year: " << year << std::endl;
-    std::cout << "Price: $" << price << std::endl;
-    std::cout << "Features: " << features << std::endl;
+    std::cout << "Interior Material: " << interiorMaterial 
+              << "\nMassage Seats: " << (hasMassageSeats ? "Yes" : "No")
+              << "\nInfotainment System: " << infotainmentSystem 
+              << "\nPaint Color: " << paintColor << std::endl;
 }
 
 void LuxurySedan::readFromBinary(std::ifstream& in) {
     Car::readFromBinary(in);
-    in.read(reinterpret_cast<char*>(&year), sizeof(year));
-    in.read(reinterpret_cast<char*>(&price), sizeof(price));
-    std::getline(in, features, '\0');
+    std::getline(in, interiorMaterial, '\0');
+    in.read(reinterpret_cast<char*>(&hasMassageSeats), sizeof(hasMassageSeats));
+    std::getline(in, infotainmentSystem, '\0');
+    std::getline(in, paintColor, '\0');
 }
 
 void LuxurySedan::writeToBinary(std::ofstream& out) const {
     Car::writeToBinary(out);
-    out.write(reinterpret_cast<const char*>(&year), sizeof(year));
-    out.write(reinterpret_cast<const char*>(&price), sizeof(price));
-    out.write(features.c_str(), features.size() + 1);
-}
-
-int LuxurySedan::getYear() const {
-    return year;
-}
-
-double LuxurySedan::getPrice() const {
-    return price;
-}
-
-std::string LuxurySedan::getFeatures() const {
-    return features;
-}
-
-void LuxurySedan::setYear(int year) {
-    this->year = year;
-}
-
-void LuxurySedan::setPrice(double price) {
-    this->price = price;
-}
-
-void LuxurySedan::setFeatures(const std::string& features) {
-    this->features = features;
+    out.write(interiorMaterial.c_str(), interiorMaterial.size() + 1);
+    out.write(reinterpret_cast<const char*>(&hasMassageSeats), sizeof(hasMassageSeats));
+    out.write(infotainmentSystem.c_str(), infotainmentSystem.size() + 1);
+    out.write(paintColor.c_str(), paintColor.size() + 1);
 }
 
 void LuxurySedan::validate() const {
-    if (year < 1886 || price < 0) {
+    if (interiorMaterial.empty() || infotainmentSystem.empty() || paintColor.empty()) {
         throw InvalidValueException("Invalid value in LuxurySedan");
     }
-}
-
-std::ostream& operator<<(std::ostream& os, const LuxurySedan& car) {
-    car.display();
-    return os;
-}
-
-std::istream& operator>>(std::istream& is, LuxurySedan& car) {
-    is >> static_cast<Car<int>&>(car);
-    std::cout << "Enter Year: ";
-    is >> car.year;
-    std::cout << "Enter Price: ";
-    is >> car.price;
-    std::cout << "Enter Features: ";
-    is.ignore(); // to ignore any newline character left in the input buffer
-    std::getline(is, car.features);
-    return is;
 }
