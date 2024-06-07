@@ -2,46 +2,56 @@
 #define CAR_H
 
 #include <iostream>
-#include <string>
 #include <fstream>
+#include <string>
 #include <stdexcept>
-#include "InvalidValueException.h"
 
-template <typename T>
+template<typename T>
 class Car {
-private:
+protected:
     int id;
     std::string make;
     std::string model;
+
 public:
-    Car(int id = 0, const std::string& make = "", const std::string& model = "");
-    virtual ~Car();
+    Car(int id = 0, const std::string& make = "", const std::string& model = "") 
+        : id(id), make(make), model(model) {}
 
-    int getId() const;
-    std::string getMake() const;
-    std::string getModel() const;
+    int getId() const { return id; }
+    std::string getMake() const { return make; }
+    std::string getModel() const { return model; }
 
-    void setId(int id);
-    void setMake(const std::string& make);
-    void setModel(const std::string& model);
+    void setId(int id) { this->id = id; }
+    void setMake(const std::string& make) { this->make = make; }
+    void setModel(const std::string& model) { this->model = model; }
 
-    virtual void display() const;
-    virtual void readFromBinary(std::ifstream& in);
-    virtual void writeToBinary(std::ofstream& out) const;
-    virtual void read(std::istream& is);
-
-    friend std::ostream& operator<<(std::ostream& os, const Car& car) {
-        car.display();
-        return os;
+    virtual void display() const {
+        std::cout << "ID: " << id << "\nMake: " << make << "\nModel: " << model << std::endl;
     }
 
-    friend std::istream& operator>>(std::istream& is, Car& car) {
-        car.read(is);
-        return is;
+    virtual void readFromBinary(std::ifstream& in) {
+        in.read(reinterpret_cast<char*>(&id), sizeof(id));
+        std::getline(in, make, '\0');
+        std::getline(in, model, '\0');
     }
+
+    virtual void writeToBinary(std::ofstream& out) const {
+        out.write(reinterpret_cast<const char*>(&id), sizeof(id));
+        out.write(make.c_str(), make.size() + 1);
+        out.write(model.c_str(), model.size() + 1);
+    }
+
+    virtual void read(std::istream& is) {
+        std::cout << "Enter ID: ";
+        is >> id;
+        is.ignore();
+        std::cout << "Enter Make: ";
+        std::getline(is, make);
+        std::cout << "Enter Model: ";
+        std::getline(is, model);
+    }
+
     virtual void validate() const = 0;
 };
-
-#include "Car.cpp"
 
 #endif // CAR_H
