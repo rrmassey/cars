@@ -78,4 +78,7 @@ std::istream& operator>>(std::istream& is, Sedan& sedan) {
     is >> sedan.price;
     std::cout << "Enter Trunk Size (cubic feet): ";
     is >> sedan.trunkSize;
-    std::
+    std::cout << "Enter Fuel Efficiency (mpg): ";
+    is >> sedan.fuelEfficiency;
+return is;
+}
