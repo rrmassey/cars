@@ -1,6 +1,3 @@
-Finally, for the `main.cpp` file:
-
-```cpp
 #include <iostream>
 #include "sedan.h"
 #include "suv.h"
