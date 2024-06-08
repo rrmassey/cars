@@ -85,4 +85,16 @@ std::ostream& operator<<(std::ostream& os, const LuxurySedan& car) {
 }
 
 std::istream& operator>>(std::istream& is, LuxurySedan& car) {
-    is
+    isstatic_cast<Sedan&>(car);
+is.ignore();
+std::cout << "Enter Interior Material: ";
+std::getline(is, car.interiorMaterial);
+std::cout << "Has Massage Seats (0 for No, 1 for Yes): ";
+is >> car.hasMassageSeats;
+is.ignore();
+std::cout << "Enter Infotainment System: ";
+std::getline(is, car.infotainmentSystem);
+std::cout << "Enter Paint Color: ";
+std::getline(is, car.paintColor);
+return is;
+}
