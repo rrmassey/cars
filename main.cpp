@@ -1,10 +1,11 @@
+Finally, for the `main.cpp` file:
+
+```cpp
 #include <iostream>
-#include <fstream>
-#include "Sedan.h"
-#include "SUV.h"
-#include "PerformanceCar.h"
-#include "LuxurySedan.h"
-#include "InvalidValueException.h"
+#include "sedan.h"
+#include "suv.h"
+#include "performancecar.h"
+#include "luxurysedan.h"
 
 int main() {
     try {
@@ -18,7 +19,7 @@ int main() {
             int option;
             std::cin >> option;
 
-            if (option == 1) {
+            if (option == 1){
                 Sedan sedan;
                 std::cin >> sedan;
                 std::ofstream outFile("sedan.dat", std::ios::binary);
@@ -31,7 +32,7 @@ int main() {
                 inFile.close();
                 std::cout << "Loaded Sedan Data:\n" << loadedSedan;
             } 
-            else if (option == 2) {
+            else if (option == 2){
                 SUV suv;
                 std::cin >> suv;
                 std::ofstream outFile("suv.dat", std::ios::binary);
@@ -44,7 +45,7 @@ int main() {
                 inFile.close();
                 std::cout << "Loaded SUV Data:\n" << loadedSUV;
             } 
-            else if (option == 3) {
+            else if (option == 3){
                 PerformanceCar car;
                 std::cin >> car;
                 std::ofstream outFile("performance_car.dat", std::ios::binary);
@@ -57,7 +58,7 @@ int main() {
                 inFile.close();
                 std::cout << "Loaded Performance Car Data:\n" << loadedCar;
             } 
-            else if (option == 4) {
+            else if (option == 4){
                 LuxurySedan car;
                 std::cin >> car;
                 std::ofstream outFile("luxury_sedan.dat", std::ios::binary);
@@ -75,9 +76,11 @@ int main() {
             }
             std::cout << "Do you want to enter another car? (y/n): ";
             std::cin >> choice;
-        } while (choice == 'y');
+        } 
+            while (choice == 'y');
+
     } 
-    catch (const std::exception& e) {
+    catch (const std::exception& e){
         std::cerr << "Error: " << e.what() << '\n';
     }
     std::cout << "Bye, Bye! Thank you for using our program!" << std::endl;
