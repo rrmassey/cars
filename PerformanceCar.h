@@ -1,30 +1,32 @@
 #ifndef PERFORMANCECAR_H
 #define PERFORMANCECAR_H
 
-#include "Car.h"
+#include "suv.h"
+#include "engine.h"
 
-class PerformanceCar : public Car<int> {
+class PerformanceCar : public SUV {
 private:
-    int year;
-    double price;
-    int horsepower;
-    double topSpeed;
+    Engine engine;
+    double topSpeed;  // in mph
+    double zeroToSixty;  // in seconds
+    double quarterMile;    // in seconds
+
 public:
-    PerformanceCar(int id = 0, const std::string& make = "", const std::string& model = "", int year = 0, double price = 0.0, int horsepower = 0, double topSpeed = 0.0);
+    PerformanceCar(int id = 0, const std::string& make = "", const std::string& model = "", int groundClearance = 0, double cargoCapacity = 0.0, bool fourWheelDrive = false, double towingCapacity = 0.0, const Engine& engine = Engine(), double topSpeed = 0.0, double zeroToSixty = 0.0, double quarterMile = 0.0);
 
     void display() const override;
     void readFromBinary(std::ifstream& in) override;
     void writeToBinary(std::ofstream& out) const override;
 
-    int getYear() const;
-    double getPrice() const;
-    int getHorsepower() const;
+    Engine getEngine() const;
     double getTopSpeed() const;
+    double getZeroToSixty() const;
+    double getquarterMile() const;
 
-    void setYear(int year);
-    void setPrice(double price);
-    void setHorsepower(int horsepower);
+    void setEngine(const Engine& engine);
     void setTopSpeed(double topSpeed);
+    void setZeroToSixty(double zeroToSixty);
+    void setquarterMile(double quarterMile);
 
     void validate() const override;
 
