@@ -1,5 +1,28 @@
-#include "Engine.h"
-#include "InvalidValueException.h"
+#include "engine.h"
+
+Engine::Engine(int horsepower, double displacement)
+    : horsepower(horsepower), displacement(displacement) {}
+
+void Engine::display() const {
+    std::cout << "Horsepower: " << horsepower << std::endl;
+    std::cout << "Displacement: " << displacement << " liters" << std::endl;
+    std::cout << "Number of Cylinders: " << numCylinders << std::endl;
+    std::cout << "Torque: " << torque << " Nm" << std::endl;
+}
+
+void Engine::readFromBinary(std::ifstream& in) {
+    in.read(reinterpret_cast<char*>(&horsepower), sizeof(horsepower));
+    in.read(reinterpret_cast<char*>(&displacement), sizeof(displacement));
+    in.read(reinterpret_cast<char*>(&numCylinders), sizeof(numCylinders));
+    in.read(reinterpret_cast<char*>(&torque), sizeof(torque));
+}
+
+void Engine::writeToBinary(std::ofstream& out) const {
+    out.write(reinterpret_cast<const char*>(&horsepower), sizeof(horsepower));
+    out.write(reinterpret_cast<const char*>(&displacement), sizeof(displacement));
+    out.write(reinterpret_cast<const char*>(&numCylinders), sizeof(numCylinders));
+    out.write(reinterpret_cast<const char*>(&torque), sizeof(torque));
+}
 
 int Engine::getHorsepower() const {
     return horsepower;
@@ -33,29 +56,19 @@ void Engine::setTorque(int torque) {
     this->torque = torque;
 }
 
-void Engine::display() const {
-    std::cout << "Horsepower: " << horsepower 
-              << "\nDisplacement: " << displacement << " L" 
-              << "\nNumber of Cylinders: " << numCylinders 
-              << "\nTorque: " << torque << " lb-ft" << std::endl;
+std::ostream& operator<<(std::ostream& os, const Engine& engine) {
+    os << "Horsepower: " << engine.horsepower << ", Displacement: " << engine.displacement << " liters";
+    return os;
 }
 
-void Engine::readFromBinary(std::ifstream& in) {
-    in.read(reinterpret_cast<char*>(&horsepower), sizeof(horsepower));
-    in.read(reinterpret_cast<char*>(&displacement), sizeof(displacement));
-    in.read(reinterpret_cast<char*>(&numCylinders), sizeof(numCylinders));
-    in.read(reinterpret_cast<char*>(&torque), sizeof(torque));
-}
-
-void Engine::writeToBinary(std::ofstream& out) const {
-    out.write(reinterpret_cast<const char*>(&horsepower), sizeof(horsepower));
-    out.write(reinterpret_cast<const char*>(&displacement), sizeof(displacement));
-    out.write(reinterpret_cast<const char*>(&numCylinders), sizeof(numCylinders));
-    out.write(reinterpret_cast<const char*>(&torque), sizeof(torque));
-}
-
-void Engine::validate() const {
-    if (horsepower < 0 || displacement < 0 || numCylinders < 0 || torque < 0) {
-        throw InvalidValueException("Invalid value in Engine");
-    }
+std::istream& operator>>(std::istream& is, Engine& engine) {
+    std::cout << "Enter Horsepower: ";
+    is >> engine.horsepower;
+    std::cout << "Enter Displacement (liters): ";
+    is >> engine.displacement;
+    std::cout << "Enter Number of Cylinders: ";
+    is >> engine.numCylinders;
+    std::cout << "Enter Torque : ";
+    is >> engine.torque;
+    return is;
 }
